@@ -897,3 +897,16 @@ void alpha_watermark(void) {
     draw_text("BETA TEST", 24, 330, 0, &yellow_alpha);
     draw_text("cubeboot rc" CONFIG_BETA_RC, 22, 330, 28, &yellow_alpha);
 }
+
+// Used for patching the banner drawing on the 'game play' menu
+void draw_blob_text_with_banner_lang(u32 type, void *blob, GXColor *color, char *str, s32 len) {
+    if (disc_read_region == 'J') {
+        switch_lang_jpn();
+    } else {
+        switch_lang_eng();
+    }
+
+    draw_blob_text(type, blob, color, str, len);
+
+    switch_lang_orig();
+}

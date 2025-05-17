@@ -956,6 +956,7 @@ static atomic_bool request_disc_start = false;
 
 atomic_uint disc_read_state = STATE_WAIT_LOAD;
 atomic_bool disc_read_banner_ready = false;
+atomic_char disc_read_region = '?';
 
 void *gm_disc_thread_worker(void *param) {
     disc_read_state = STATE_WAIT_LOAD;
@@ -1033,6 +1034,7 @@ void *gm_disc_thread_worker(void *param) {
         }
 
         dvd_threaded_read(stock_banner_ptr, sizeof(BNR), game_info.bnr_offset, fd);
+        disc_read_region = (char)game_info.game_id[3];
         disc_read_banner_ready = true;
 
         // The disc's loaded!

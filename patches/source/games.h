@@ -111,6 +111,7 @@ extern gm_file_entry_t second_boot_entry;
 // For DVD-reading thread
 extern atomic_uint disc_read_state;
 extern atomic_bool disc_read_banner_ready;
+extern atomic_char disc_read_region;
 
 extern BNR* stock_banner_ptr;
 

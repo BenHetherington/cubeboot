@@ -115,3 +115,28 @@ patch_inst_pal "_patch_menu_alpha_setup" 0x81312c3c 0x81312284 0x81312d7c bl pre
 patch_inst_pal "_fix_video_mode_init" 0x81300520 0x81300520 0x81300610 bl get_tvmode
 
 patch_inst_global "_patch_pre_main" 0x81300090 bl pre_main
+
+// Patches all the `draw_blob_text` calls used for drawing the banner text on the 'game play' screen
+patch_inst_ntsc "_patch_gameplay_banner_text_a_title_shadow" 0x813126bc 0x81312918 0x81312cb0 0x81312cc8 bl draw_blob_text_with_banner_lang
+patch_inst_pal "_patch_gameplay_banner_text_a_title_shadow" 0x81313208 0x81312844 0x81313348 bl draw_blob_text_with_banner_lang
+
+patch_inst_ntsc "_patch_gameplay_banner_a_title" 0x813126d8 0x81312934 0x81312ccc 0x81312ce4 bl draw_blob_text_with_banner_lang
+patch_inst_pal "_patch_gameplay_banner_a_title" 0x81313224 0x81312860 0x81313364 bl draw_blob_text_with_banner_lang
+
+patch_inst_ntsc "_patch_gameplay_banner_a_publisher_shadow" 0x813126f0 0x8131294c 0x81312ce4 0x81312cfc bl draw_blob_text_with_banner_lang
+patch_inst_pal "_patch_gameplay_banner_a_publisher_shadow" 0x8131323c 0x81312878 0x8131337c bl draw_blob_text_with_banner_lang
+
+patch_inst_ntsc "_patch_gameplay_banner_a_publisher" 0x8131270c 0x81312968 0x81312d00 0x81312d18 bl draw_blob_text_with_banner_lang
+patch_inst_pal "_patch_gameplay_banner_a_publisher" 0x81313258 0x81312894 0x81313398 bl draw_blob_text_with_banner_lang
+
+patch_inst_ntsc "_patch_gameplay_banner_b_title_shadow" 0x0 0x813129a4 0x81312d3c 0x81312d54 bl draw_blob_text_with_banner_lang
+patch_inst_pal "_patch_gameplay_banner_b_title_shadow" 0x81313294 0x813128d0 0x813133d4 bl draw_blob_text_with_banner_lang
+
+patch_inst_ntsc "_patch_gameplay_banner_b_title" 0x0 0x813129d0 0x81312d68 0x81312d80 bl draw_blob_text_with_banner_lang
+patch_inst_pal "_patch_gameplay_banner_b_title" 0x813132c0 0x813128fc 0x81313400 bl draw_blob_text_with_banner_lang
+
+patch_inst_ntsc "_patch_gameplay_banner_b_publisher_shadow" 0x0 0x813129f8 0x81312d90 0x81312da8 bl draw_blob_text_with_banner_lang
+patch_inst_pal "_patch_gameplay_banner_b_publisher_shadow" 0x813132e8 0x81312924 0x81313428 bl draw_blob_text_with_banner_lang
+
+patch_inst_ntsc "_patch_gameplay_banner_b_publisher" 0x0 0x81312a24 0x81312dbc 0x81312dd4 bl draw_blob_text_with_banner_lang
+patch_inst_pal "_patch_gameplay_banner_publisher" 0x81313314 0x81312950 0x81313454 bl draw_blob_text_with_banner_lang
