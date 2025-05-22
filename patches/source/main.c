@@ -27,6 +27,8 @@
 #include "boot.h"
 #include "gameid.h"
 
+#include "temp_test_disc.h"
+
 #define CUBE_TEX_WIDTH 84
 #define CUBE_TEX_HEIGHT 84
 
@@ -354,20 +356,25 @@ __attribute_used__ void mod_cube_anim() {
 __attribute_used__ void pre_thread_init() {
     dolphin_ARAMInit();
     orig_thread_init();
-    // if (!start_passthrough_game) {
-    //     gm_init_thread();
-    //     gm_start_thread("/");
-    // }
+#if !TEMP_TEST_DISC
+    if (!start_passthrough_game) {
+        gm_init_thread();
+        gm_start_thread("/");
+    }
+#else
     gm_init_thread();
     gm_start_disc_thread();
+#endif
 }
 
 __attribute_used__ void pre_menu_init(int unk) {
     menu_init(unk);
 
+#if !TEMP_TEST_DISC
     // change default menu
-    // *prev_menu_id = MENU_GAMESELECT_TRANSITION_ID;
-    // *cur_menu_id = MENU_GAMESELECT_ID;
+    *prev_menu_id = MENU_GAMESELECT_TRANSITION_ID;
+    *cur_menu_id = MENU_GAMESELECT_ID;
+#endif
 
     custom_gameselect_init();
 
@@ -442,11 +449,13 @@ extern const BNR **banner_pointer;
 
 __attribute_data__ int frame_count = 0;
 __attribute_used__ u32 bs2tick() {
+#if TEMP_TEST_DISC
     // If the disc thread is running, do things relating to it
     // TODO: Make this conditional!
     *banner_ready = disc_read_banner_ready;
     *banner_pointer = stock_banner_ptr;
     return disc_read_state;
+#endif
 
 
 
