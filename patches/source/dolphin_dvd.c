@@ -12,7 +12,6 @@
 #include <ogc/system.h>
 #include "picolibc.h" // for strcasecmp
 
-#include "attr.h"
 #include "reloc.h"
 #include "flippy_sync.h"
 #include "dvd_threaded.h"
@@ -87,7 +86,7 @@ static bnr_info_t get_banner_offset_slow(DiskHeader *header, uint32_t fd) {
 dolphin_game_into_t get_game_info_with_open_game(u8 fd) {
     __attribute__((aligned(32))) static u32 small_buf[8]; // for BNR reads
 
-    __attribute_aligned_data_lowmem__ static DiskHeader header;
+    __attribute__((aligned(32))) static DiskHeader header;
     dvd_threaded_read(&header, sizeof(DiskHeader), 0, fd); //Read in the disc header
 
     // OSReport("DEBUG: disk header loaded\n");

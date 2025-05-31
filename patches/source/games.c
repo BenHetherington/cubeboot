@@ -27,7 +27,7 @@
 #include "flippy_sync.h"
 #include "gc_dvd.h"
 
-#include "upng/upng.h"
+#include "ok_png.h"
 #include "metaphrasis.h"
 
 #include "games.h"
@@ -55,7 +55,8 @@ bool game_disc_running = false;
 // TODO: use a log2 malloc copy strategy for this
 __attribute_data_lowmem__ static gm_path_entry_t __gm_early_path_list[2000];
 __attribute_data_lowmem__ static gm_path_entry_t *__gm_sorted_path_list[2000];
-__attribute_data_lowmem__ static gm_file_entry_t *gm_entry_backing[2000];
+
+static gm_file_entry_t *gm_entry_backing[2000];
 static u32 gm_entry_count = 0;
 
 __attribute_reloc__ BNR* stock_banner_ptr;
@@ -232,7 +233,7 @@ void gm_icon_load(gm_icon_t *icon) {
 
     gm_icon_buf_t *icon_ptr = gm_get_icon_buf();
     if (icon_ptr == NULL) {
-        OSReport("ERROR: could not allocate memory A\n");
+        OSReport("ERROR: could not allocate memory\n");
         return;
     }
     icon->buf = icon_ptr;
@@ -309,7 +310,7 @@ void gm_banner_load(gm_banner_t *banner) {
 
     gm_banner_buf_t *banner_ptr = gm_get_banner_buf();
     if (banner_ptr == NULL) {
-        OSReport("ERROR: could not allocate memory B\n");
+        OSReport("ERROR: could not allocate memory\n");
         return;
     }
     banner->buf = banner_ptr;
@@ -363,24 +364,62 @@ void gm_init_heap() {
 }
 
 // png
-void *gmalloc(size_t size) {
+static void *ok_gm_alloc(void *user_data, size_t size) {
+    (void)user_data;
     return pmalloc_malloc(pm, size);
 }
 
-void gmfree(void *memory) {
+static void ok_gm_free(void *user_data, void *memory) {
+    (void)user_data;
     pmalloc_free(pm, memory);
 }
 
-void *gm_memalign(size_t size, uint32_t alignment) {
-    return pmalloc_memalign(pm, size, alignment);
+const ok_png_allocator OK_PNG_GM_ALLOCATOR = {
+    .alloc = ok_gm_alloc,
+    .free = ok_gm_free,
+    .image_alloc = NULL,
+};
+
+typedef struct {
+    uint8_t *data;
+    size_t size;
+    size_t position;
+} ok_mem_state_t;
+static ok_mem_state_t ok_mem_state;
+
+static size_t ok_mem_read(void *user_data, uint8_t *buffer, size_t length) {
+    (void)user_data;
+    ok_mem_state_t *state = &ok_mem_state;
+    if (state->position + length > state->size) {
+        length = state->size - state->position;  // Adjust length to prevent overflow
+    }
+    memcpy(buffer, state->data + state->position, length);
+    state->position += length;
+    return length;
 }
 
-void gm_freealign(void *memory) {
-    pmalloc_freealign(pm, memory);
+static bool ok_mem_seek(void *user_data, long count) {
+    (void)user_data;
+    ok_mem_state_t *state = &ok_mem_state;
+    if (state->position + count > state->size || state->position + count < 0) {
+        return false;  // Out of bounds
+    }
+    state->position += count;
+    return true;
 }
 
-void gm_heapstats() {
-    pmalloc_dump_stats(pm);
+static const ok_png_input OK_PNG_MEM_INPUT = {
+    .read = ok_mem_read,
+    .seek = ok_mem_seek,
+};
+
+ok_png gm_png_decode(void *file_buf, size_t file_size) {
+    ok_mem_state.data = file_buf;
+    ok_mem_state.size = file_size;
+    ok_mem_state.position = 0;
+
+    ok_png png = ok_png_read_from_input(OK_PNG_COLOR_FORMAT_RGBA, OK_PNG_MEM_INPUT, file_buf, OK_PNG_GM_ALLOCATOR, NULL);
+    return png;
 }
 
 // HELPERS
@@ -551,14 +590,14 @@ static int gm_load_banner(gm_file_entry_t *entry, u32 aram_offset, bool force_un
         return false;
     }
 
-    __attribute_aligned_data_lowmem__ static BNR banner_buffer;
+    __attribute_aligned_data__ static BNR banner_buffer;
     dvd_threaded_read(&banner_buffer, sizeof(BNR), entry->extra.dvd_bnr_offset, status->fd);
     dvd_custom_close(status->fd);
 
     entry->asset.banner.state = GM_LOAD_STATE_LOADING;
     gm_banner_buf_t *banner_ptr = gm_get_banner_buf();
     if (banner_ptr == NULL) {
-        OSReport("ERROR: could not allocate memory C\n");
+        OSReport("ERROR: could not allocate memory\n");
         return false;
     }
 
@@ -583,14 +622,14 @@ static bool gm_load_icon(gm_file_entry_t *entry, u32 aram_offset, bool force_unl
     char icon_path[128];
     strcpy(icon_path, entry->path);
     char *ext = strrchr(icon_path, '.');
-    if (ext == NULL) strcat(icon_path, ".png");
-    else strcpy(ext, ".png");
+    if (ext == NULL) return false;
+    strcpy(ext, ".png");
 
     // load the icon
     dvd_custom_open(icon_path, FILE_ENTRY_TYPE_FILE, IPC_FILE_FLAG_DISABLECACHE | IPC_FILE_FLAG_DISABLEFASTSEEK);
     file_status_t *status = dvd_custom_status();
     if (status == NULL || status->result != 0) {
-        OSReport("ERROR: could not open icon file: %s\n", icon_path);
+        // OSReport("ERROR: could not open icon file\n");
         return false;
     }
 
@@ -604,46 +643,25 @@ static bool gm_load_icon(gm_file_entry_t *entry, u32 aram_offset, bool force_unl
     dvd_threaded_read(file_buf, file_size, 0, status->fd);
     dvd_custom_close(status->fd);
 
-    upng_t *img = upng_new_from_bytes(file_buf, file_size);
-    if (img == NULL) {
-        OSReport("ERROR: could not allocate png\n");
+    ok_png png = gm_png_decode(file_buf, file_size);
+    if (png.error_code != OK_PNG_SUCCESS) {
+        OSReport("ERROR: could not decode icon file\n");
         return false;
     }
 
-    upng_error png_err = upng_decode(img);
-    if (png_err != UPNG_EOK) {
-        OSReport("ERROR: could not decode icon file (%d)\n", png_err);
-        return false;
-    }
-
-    // upng_get_format
-    upng_format png_format = upng_get_format(img);
-    if (png_format != UPNG_RGBA8) {
-        OSReport("ERROR: invalid png format (%d)\n", png_format);
-        return false;
-    }
-
-    u32 png_width = upng_get_width(img);
-    u32 png_height = upng_get_height(img);
-
-    OSReport("PNG: %d x %d\n", png_width, png_height);
+    OSReport("PNG: %d x %d\n", png.width, png.height);
     gm_free(file_buf);
-
-    if (png_width != 32 || png_height != 32) {
-        OSReport("ERROR: invalid png size\n");
-        return false;
-    }
 
     entry->asset.icon.state = GM_LOAD_STATE_LOADING;
     gm_icon_buf_t *icon_ptr = gm_get_icon_buf();
     if (icon_ptr == NULL) {
-        OSReport("ERROR: could not allocate memory D\n");
+        OSReport("ERROR: could not allocate memory\n");
         return false;
     }
 
-    Metaphrasis_convertBufferToRGB5A3((uint32_t*)upng_get_buffer(img), (uint32_t*)&icon_ptr->data[0], png_width, png_height);
+    Metaphrasis_convertBufferToRGB5A3((uint32_t*)png.data, (uint32_t*)&icon_ptr->data[0], png.width, png.height);
     DCFlushRange(&icon_ptr->data[0], ICON_PIXELDATA_LEN);
-    upng_free(img);
+    pmalloc_free(pm, png.data);
 
     entry->asset.icon.buf = icon_ptr;
     if (force_unload) {
@@ -705,20 +723,21 @@ void gm_check_files(int path_count) {
             bool bnr_loaded = gm_load_banner(backing, aram_offset, force_unload);
             if (!bnr_loaded) {
                 OSReport("Failed to load banner %s\n", entry->path);
-                backing->asset.use_banner = false;
-            } else {
-                backing->asset.use_banner = true;
-                aram_offset += BNR_PIXELDATA_LEN;
             }
+            aram_offset += BNR_PIXELDATA_LEN;
 
             // load the icon
-            bool icon_loaded = gm_load_icon(backing, aram_offset, force_unload);
-            if (!icon_loaded) {
-                // OSReport("Failed to load icon %s\n", entry->path);
-            } else {
-                backing->asset.use_banner = false;
-                aram_offset += ICON_PIXELDATA_LEN;
-            }
+            backing->asset.use_banner = true;
+
+            // bool icon_loaded = gm_load_icon(backing, aram_offset, force_unload);
+            // if (!icon_loaded) {
+            //     // OSReport("Failed to load icon %s\n", entry->path);
+            //     backing->asset.use_banner = true;
+            // } else {
+            //     backing->asset.use_banner = false;
+            // }
+            backing->asset.use_banner = true;
+            aram_offset += ICON_PIXELDATA_LEN;
 
             // set heap pointer
             gm_entry_backing[gm_entry_count] = backing;
@@ -741,14 +760,13 @@ void gm_check_files(int path_count) {
                 strcpy(backing->desc.description, "Directory");
             }
 
-            // load the icon
-            bool icon_loaded = gm_load_icon(backing, aram_offset, force_unload);
-            if (!icon_loaded) {
-                // OSReport("Failed to load icon %s\n", entry->path);
-            } else {
-                backing->asset.use_banner = false;
-                aram_offset += ICON_PIXELDATA_LEN;
-            }
+            // // load the icon
+            // bool icon_loaded = gm_load_icon(backing, aram_offset, force_unload);
+            // if (!icon_loaded) {
+            //     // OSReport("Failed to load icon %s\n", entry->path);
+            // }
+            backing->asset.use_banner = false;
+            aram_offset += ICON_PIXELDATA_LEN;
 
             // set heap pointer
             gm_entry_backing[gm_entry_count] = backing;
@@ -1064,7 +1082,7 @@ void gm_init_thread() {
 
 // match https://github.com/projectPiki/pikmin2/blob/snakecrowstate-work/include/Dolphin/OS/OSThread.h#L55-L74
 static OSThread thread_obj;
-static u8 thread_stack[32 * 1024]; // TODO: move to lowmem slab?
+static u8 thread_stack[32 * 1024];
 void gm_start_thread(const char *target) {
     if (game_enum_running || game_disc_running) {
         OSReport("ERROR: game enum or disc thread is already running\n");
