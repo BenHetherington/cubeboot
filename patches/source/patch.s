@@ -140,3 +140,12 @@ patch_inst_pal "_patch_gameplay_banner_b_publisher_shadow" 0x813132e8 0x81312924
 
 patch_inst_ntsc "_patch_gameplay_banner_b_publisher" 0x0 0x81312a24 0x81312dbc 0x81312dd4 bl draw_blob_text_with_banner_lang
 patch_inst_pal "_patch_gameplay_banner_publisher" 0x81313314 0x81312950 0x81313454 bl draw_blob_text_with_banner_lang
+
+// Add a hook for handling additional inputs on the top-level menu
+.macro insert_top_level_menu_extra_inputs
+    bl top_level_menu_extra_inputs  // Where the next instruction (loading return address) previously was
+    lwz	r0, 0x0014 (sp)             // Was `li r3, 0`, which is never read
+.endm
+
+patch_inst_ntsc "_patch_top_level_extra_inputs" 0x81311250 0x813114a0 0x81311838 0x81311850 insert_top_level_menu_extra_inputs
+patch_inst_pal "_patch_top_level_extra_inputs" 0x81311d3c 0x813113cc 0x81311e78 insert_top_level_menu_extra_inputs
