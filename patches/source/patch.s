@@ -116,6 +116,12 @@ patch_inst_pal "_fix_video_mode_init" 0x81300520 0x81300520 0x81300610 bl get_tv
 
 patch_inst_global "_patch_pre_main" 0x81300090 bl pre_main
 
+patch_inst_ntsc "_patch_draw_buttons" 0x813149b8 0x81314d30 0x813150c8 0x813150e0 bl patch_draw_buttons
+patch_inst_pal "_patch_draw_buttons" 0x813156b4 0x81314c5c 0x813157f4 bl patch_draw_buttons
+
+patch_inst_ntsc "_patch_update_button_alphas" 0x81312104 0x81312354 0x813126ec 0x81312704 bl patch_update_button_alphas
+patch_inst_pal "_patch_update_button_alphas" 0x81312c38 0x81312280 0x81312d78 bl patch_update_button_alphas
+
 // Patches all the `draw_blob_text` calls used for drawing the banner text on the 'game play' screen
 patch_inst_ntsc "_patch_gameplay_banner_text_a_title_shadow" 0x813126bc 0x81312918 0x81312cb0 0x81312cc8 bl draw_blob_text_with_banner_lang
 patch_inst_pal "_patch_gameplay_banner_text_a_title_shadow" 0x81313208 0x81312844 0x81313348 bl draw_blob_text_with_banner_lang
