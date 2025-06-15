@@ -270,7 +270,7 @@ __attribute_used__ void pre_thread_init() {
 __attribute_used__ void pre_menu_init(int unk) {
     menu_init(unk);
 
-    if (!is_disc_drive_selected) {
+    if (selected_device == device_flippydrive) {
         // change default menu
         *next_menu_id = MENU_GAMESELECT_TRANSITION_ID;
         *cur_menu_id = MENU_GAMESELECT_ID;
