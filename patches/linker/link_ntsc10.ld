@@ -88,9 +88,12 @@ ntsc10_font_init = 0x813083c4;
 ntsc10_font_ptr_ptr_a = 0x8145d640;
 ntsc10_font_ptr_ptr_b = 0x8145d644;
 ntsc10___CARDGetStatusEx = 0x81347cc8;
+ntsc10___CARDGetControlBlock = 0x813431b0;
+ntsc10___CARDPutControlBlock = 0x81343260;
 ntsc10_get_card_info = 0x8131b85c;
 ntsc10_draw_card_info = 0x8131a5b4;
 ntsc10_card_thread_mq = 0x81467790;
+ntsc10_read_save_chunk = 0x813476b0;
 
 ntsc10_SetEffectivePriority = 0x813385e4;
 ntsc10___OSGetEffectivePriority = 0x813385a8;

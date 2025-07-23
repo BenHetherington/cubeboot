@@ -84,9 +84,12 @@ pal12_font_init = 0x81308348;
 pal12_font_ptr_ptr_a = 0x814af658;
 pal12_font_ptr_ptr_b = 0x814af65c;
 pal12___CARDGetStatusEx = 0x81360490;
+pal12___CARDGetControlBlock = 0x8135c6e8;
+pal12___CARDPutControlBlock = 0x8135c798;
 pal12_get_card_info = 0x8131ca74;
 pal12_draw_card_info = 0x8131b6ac;
 pal12_card_thread_mq = 0x814b9670;
+pal12_read_save_chunk = 0x8135fe78;
 
 pal12_SetEffectivePriority = 0x813657e0;
 pal12___OSGetEffectivePriority = 0x813657e0;

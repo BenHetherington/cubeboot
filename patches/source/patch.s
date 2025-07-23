@@ -130,3 +130,22 @@ patch_inst_pal "_patch_update_button_alphas" 0x81312c38 0x81312280 0x81312d78 bl
 
 patch_inst_ntsc "_patch_top_level_extra_inputs" 0x81311250 0x813114a0 0x81311838 0x81311850 insert_top_level_menu_extra_inputs
 patch_inst_pal "_patch_top_level_extra_inputs" 0x81311d3c 0x813113cc 0x81311e78 insert_top_level_menu_extra_inputs
+
+// Patches for memory card copying/moving
+patch_inst_ntsc "_patch_read_save_chunk_call_during_copy" 0x8131cad8 0x8131d204 0x8131d59c 0x8131d5b4 bl read_and_patch_save_chunk
+patch_inst_pal "_patch_read_save_chunk_call_during_copy" 0x8131dbb0 0x8131d130 0x8131dcf0 bl read_and_patch_save_chunk
+
+patch_inst_ntsc "_patch_bypass_copyable_check" 0x8131d248 0x8131d974 0x8131dd0c 0x8131dd24 li r0, 0
+patch_inst_pal "_patch_bypass_copyable_check" 0x8131e320 0x8131d8a0 0x8131e460 li r0, 0
+patch_inst_ntsc "_patch_bypass_movable_check" 0x8131d25c 0x8131d988 0x8131dd20 0x8131dd38 li r0, 0
+patch_inst_pal "_patch_bypass_movable_check" 0x8131e334 0x8131d8b4 0x8131e474 li r0, 0
+
+patch_inst_ntsc "_patch_bypass_ui_copyable_check" 0x813152fc 0x813156ac 0x81315a44 0x81315a5c li r0, 1
+patch_inst_pal "_patch_bypass_ui_copyable_check" 0x81316058 0x813155d8 0x81316198 li r0, 1
+patch_inst_ntsc "_patch_bypass_ui_copyable_check_for_error_message" 0x81315404 0x813157b4 0x81315b4c 0x81315b64 li r0, 1
+patch_inst_pal "_patch_bypass_ui_copyable_check_for_error_message" 0x81316160 0x813156e0 0x813162a0 li r0, 1
+
+patch_inst_ntsc "_patch_bypass_ui_movable_check" 0x81315518 0x813158c8 0x81315c60 0x81315c78 li r0, 1
+patch_inst_pal "_patch_bypass_ui_movable_check" 0x81316274 0x813157f4 0x813163b4 li r0, 1
+patch_inst_ntsc "_patch_bypass_ui_movable_check_for_error_message" 0x81315620 0x813159d0 0x81315d68 0x81315d80 li r0, 1
+patch_inst_pal "_patch_bypass_ui_movable_check_for_error_message" 0x8131637c 0x813158fc 0x813164bc li r0, 1
