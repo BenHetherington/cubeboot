@@ -128,3 +128,4 @@ void gm_start_disc_thread();
 void gm_line_changed(int delta);
 bool gm_can_move();
 gm_file_entry_t *gm_get_game_entry(int index);
+u16 gm_get_current_pal_banner_language();

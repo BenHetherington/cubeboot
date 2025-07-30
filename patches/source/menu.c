@@ -11,6 +11,7 @@
 #include "audio.h"
 #include "bs2.h"
 #include "draw.h"
+#include "languages.h"
 #include "usbgecko.h"
 #include "menu.h"
 #include "grid.h"
@@ -636,10 +637,10 @@ __attribute_used__ void original_gameselect_menu(u8 broken_alpha_0, u8 alpha_1, 
             if (is_valid_disc_bnr) {
                 pixelData = stock_banner_ptr->pixelData;
 
-                int language = 0;
-                if (stock_banner_ptr->magic[3] == '2' /*&& is_pal_console */) {
+                u16 language = 0;
+                if (stock_banner_ptr->magic[3] == '2' && get_pal_banner_language) {
                     // BNR2 banners support multiple PAL languages, so use the appropriate one for this PAL console
-                    // TODO: How do we get the current PAL language?
+                    language = get_pal_banner_language();
                 }
                 desc = &stock_banner_ptr->desc[language];
             }

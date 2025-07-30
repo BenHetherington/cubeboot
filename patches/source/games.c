@@ -32,6 +32,7 @@
 #include "bs2.h"
 #include "games.h"
 #include "grid.h"
+#include "languages.h"
 #include "menu.h"
 #include "time.h"
 
@@ -59,7 +60,13 @@ __attribute_data_lowmem__ static gm_file_entry_t *gm_entry_backing[2000];
 
 static u32 gm_entry_count = 0;
 
+static u16 current_pal_banner_language = 0;
+
 __attribute_reloc__ BNR* stock_banner_ptr;
+
+u16 gm_get_current_pal_banner_language() {
+    return current_pal_banner_language;
+}
 
 gm_file_entry_t *gm_get_game_entry(int index) {
     if (index >= gm_entry_count) return NULL;
@@ -614,8 +621,13 @@ static int gm_load_banner(gm_file_entry_t *entry, u32 aram_offset, bool force_un
         gm_banner_setup(&entry->asset.banner, aram_offset);
     }
 
-    // TODO: check current language using extra.dvd_bnr_type
-    memcpy(&entry->desc, &banner_buffer.desc[0], sizeof(BNRDesc));
+    u16 language = 0;
+    if (entry->extra.dvd_bnr_type == BANNER_MULTI_LANG) {
+        // BNR2 banners support multiple PAL languages, so use the appropriate one for this console
+        language = current_pal_banner_language;
+    }
+
+    memcpy(&entry->desc, &banner_buffer.desc[language], sizeof(BNRDesc));
 
     return true;
 }
@@ -1115,9 +1127,16 @@ void gm_start_thread(const char *target) {
         }
 
         target = game_enum_path;
+    } else if (strcmp(target, ".") == 0) {
+        // Use the same path as before
+        target = game_enum_path;
     }
 
     char path[128];
+    if (strlen(target) >= sizeof(path)) {
+        OSReport("ERROR: target path too long");
+        return;
+    }
     strcpy(path, target);
     if (path[strlen(path) - 1] != '/') {
         strcat(path, "/");
@@ -1150,6 +1169,13 @@ void gm_start_thread(const char *target) {
 
     game_backing_count = 0;
     DCBlockStore((void*)OSRoundDown32B((u32)&game_backing_count));
+
+    current_pal_banner_language = 0;
+    if (get_pal_banner_language) {
+        // Store the currently-used PAL language, so we can use it to pick the
+        // selected language's text within multi-lingual BNR2 banners
+        current_pal_banner_language = get_pal_banner_language();
+    }
 
     // Start the thread
     u32 thread_stack_size = sizeof(thread_stack);

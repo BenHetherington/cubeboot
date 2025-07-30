@@ -117,3 +117,5 @@ ntsc12_001_cube_menu_alpha = 0x8148b598;
 ntsc12_001_draw_buttons = 0x8131499c;
 ntsc12_001_setup_buttons_matrix = 0x8130344c;
 ntsc12_001_update_button_alphas = 0x81312080;
+
+ntsc12_001_get_pal_banner_language = 0;

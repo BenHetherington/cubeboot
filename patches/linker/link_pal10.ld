@@ -119,3 +119,5 @@ pal10_cube_menu_alpha = 0x814b5eb8;
 pal10_draw_buttons = 0x8131508c;
 pal10_setup_buttons_matrix = 0x813030b0;
 pal10_update_button_alphas = 0x81312580;
+
+pal10_get_pal_banner_language = 0x8130b47c;

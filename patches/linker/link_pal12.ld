@@ -118,3 +118,5 @@ pal12_cube_menu_alpha = 0x814b7678;
 pal12_draw_buttons = 0x813151cc;
 pal12_setup_buttons_matrix = 0x81303218;
 pal12_update_button_alphas = 0x813126c0;
+
+pal12_get_pal_banner_language = 0x8130b5bc;

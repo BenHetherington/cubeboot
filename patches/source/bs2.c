@@ -6,6 +6,7 @@
 #include "dol.h"
 #include "element_alpha.h"
 #include "flippy_sync.h"
+#include "languages.h"
 #include "gameid.h"
 #include "games.h"
 #include "gc_dvd.h"
@@ -120,6 +121,13 @@ u32 bs2tick_flippydrive() {
     // For now, assume that the FlippyDrive is ready to go
     // Ideally, this should check if the network or SD card is accessible
     current_device_state = device_ready;
+
+    if (get_pal_banner_language && get_pal_banner_language() != gm_get_current_pal_banner_language()) {
+        // The user has changed the current language!
+        // Restart the thread to ensure that the banners have the correct language
+        gm_deinit_thread();
+        gm_start_thread(".");
+    }
 
     // this helps the start menu show correctly
     if (*main_menu_id >= MAIN_MENU_ID_NO_DISC_FADE_IN) {
