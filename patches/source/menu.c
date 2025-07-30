@@ -52,18 +52,15 @@ __attribute_reloc__ void (*draw_start_anim)(u8 alpha);
 __attribute_reloc__ void *banner_element_alpha;
 
 // unknown blob (from memcard menu)
-__attribute_reloc__ void **ptr_menu_blob;
-__attribute_data__ void *menu_blob = NULL;
+__attribute_reloc__ void **menu_blob;
 
 // unknown blobs (from gameselect menu)
 __attribute_reloc__ void *game_blob_text;
 __attribute_reloc__ void *game_blob_insert_disc;
 __attribute_reloc__ void *game_blob_reading_disc;
 __attribute_reloc__ void *game_blob_could_not_read_disc;
-__attribute_reloc__ void **ptr_game_blob_a;
-__attribute_data__ void *game_blob_a = NULL;
-__attribute_reloc__ void **ptr_game_blob_b;
-__attribute_data__ void *game_blob_b = NULL;
+__attribute_reloc__ void **game_blob_a;
+__attribute_reloc__ void **game_blob_b;
 
 // helpers
 __attribute_reloc__ void (*apply_save_rot)(s32 x, s32 y, s32 z, Mtx matrix);
@@ -182,11 +179,6 @@ __attribute_used__ void custom_gameselect_init() {
     // default banner
     *banner_pointer = (const BNR *)&default_opening_bin[0];
     *banner_ready = 1;
-
-    // menu setup
-    menu_blob = *ptr_menu_blob;
-    game_blob_a = *ptr_game_blob_a;
-    game_blob_b = *ptr_game_blob_b;
 
 
     // if (*banner_pointer) {
@@ -560,10 +552,10 @@ __attribute_used__ void custom_gameselect_menu(u8 broken_alpha_0, u8 alpha_1, u8
     fix_gameselect_view();
     setup_tex_draw(1, 0, 0);
     if (top_line_num > 0) {
-        draw_named_tex(make_type('a','r','a','u'), menu_blob, &white, 0x800 - 80, 0); // TODO: y pos anim
+        draw_named_tex(make_type('a','r','a','u'), *menu_blob, &white, 0x800 - 80, 0); // TODO: y pos anim
     }
     if (number_of_lines > DRAW_TOTAL_ROWS && top_line_num < (number_of_lines - DRAW_TOTAL_ROWS)) {
-        draw_named_tex(make_type('a','r','a','d'), menu_blob, &white, 0x800 - 80, 0); // TODO: y pos anim
+        draw_named_tex(make_type('a','r','a','d'), *menu_blob, &white, 0x800 - 80, 0); // TODO: y pos anim
     }
 
     // box
@@ -577,14 +569,14 @@ __attribute_used__ void custom_gameselect_menu(u8 broken_alpha_0, u8 alpha_1, u8
         else switch_lang_eng();
 
         // info
-        draw_blob_text(make_type('t','i','t','l'), menu_blob, &white, entry->desc.fullGameName, 0x1f);
-        draw_blob_text(make_type('i','n','f','o'), menu_blob, &white, entry->desc.description, 0x1f);
+        draw_blob_text(make_type('t','i','t','l'), *menu_blob, &white, entry->desc.fullGameName, 0x1f);
+        draw_blob_text(make_type('i','n','f','o'), *menu_blob, &white, entry->desc.description, 0x1f);
 
         switch_lang_eng();
         if (entry->type == GM_FILE_TYPE_PROGRAM || entry->type == GM_FILE_TYPE_DIRECTORY) {
             // game source
             switch_lang_eng();
-            draw_blob_border(make_type('f','r','m','c'), menu_blob, &white);
+            draw_blob_border(make_type('f','r','m','c'), *menu_blob, &white);
 
             char *type_text = entry->type == GM_FILE_TYPE_DIRECTORY ? "DIR" : "DOL";
             draw_text(type_text, 20, 125, 540, &white);
@@ -594,25 +586,25 @@ __attribute_used__ void custom_gameselect_menu(u8 broken_alpha_0, u8 alpha_1, u8
                 // icon image
                 setup_tex_draw(1, 0, 1);
                 icon_texture.offset = (s32)((u32)default_icon - (u32)&icon_texture);
-                draw_blob_tex(make_type('i','c','0','0'), menu_blob, &white, &icon_texture);
+                draw_blob_tex(make_type('i','c','0','0'), *menu_blob, &white, &icon_texture);
             } else if (entry->asset.icon.state == GM_LOAD_STATE_LOADED) {
                 // icon image
                 setup_tex_draw(1, 0, 1);
                 // TODO: handle format changes for compressed icons
                 icon_texture.offset = (s32)((u32)entry->asset.icon.buf->data - (u32)&icon_texture);
-                draw_blob_tex(make_type('i','c','0','0'), menu_blob, &white, &icon_texture);
+                draw_blob_tex(make_type('i','c','0','0'), *menu_blob, &white, &icon_texture);
             }
         } else if (entry->type == GM_FILE_TYPE_GAME) {
             // game source
             switch_lang_eng();
-            draw_blob_border(make_type('f','r','m','c'), menu_blob, &white);
+            draw_blob_border(make_type('f','r','m','c'), *menu_blob, &white);
             draw_text("ISO", 20, 125, 540, &white);
 
             if (entry->asset.banner.state == GM_LOAD_STATE_LOADED) {
                 // banner image
                 setup_tex_draw(1, 0, 1);
                 banner_texture.offset = (s32)((u32)(entry->asset.banner.buf->data) - (u32)&banner_texture);
-                draw_blob_tex(make_type('b','a','n','a'), menu_blob, &white, &banner_texture);
+                draw_blob_tex(make_type('b','a','n','a'), *menu_blob, &white, &banner_texture);
             }
         }
         switch_lang_orig();
@@ -676,18 +668,18 @@ __attribute_used__ void original_gameselect_menu(u8 broken_alpha_0, u8 alpha_1, 
         // game banner
         setup_tex_draw(1, 0, 1);
         banner_texture.offset = (s32)((u32)(pixelData) - (u32)&banner_texture);
-        draw_blob_tex(make_type('b','a','n','a'), game_blob_b, &banner_white, &banner_texture);
+        draw_blob_tex(make_type('b','a','n','a'), *game_blob_b, &banner_white, &banner_texture);
     }
 
     // game info
     prep_text_mode();
     if (desc) {
-        draw_blob_text(make_type('t','i','t','l'), game_blob_b, &banner_white, desc->fullGameName, 0x40);
+        draw_blob_text(make_type('t','i','t','l'), *game_blob_b, &banner_white, desc->fullGameName, 0x40);
         if (show_full_banner) {
-            draw_blob_text(make_type('m','a','k','r'), game_blob_b, &banner_white, desc->fullCompany, 0x40);
-            draw_blob_text_long(make_type('i','n','f','o'), game_blob_b, &banner_white, desc->description, 0x80);
+            draw_blob_text(make_type('m','a','k','r'), *game_blob_b, &banner_white, desc->fullCompany, 0x40);
+            draw_blob_text_long(make_type('i','n','f','o'), *game_blob_b, &banner_white, desc->description, 0x80);
         } else {
-            draw_blob_text(make_type('m','a','k','r'), game_blob_b, &banner_white, desc->description, 0x40);
+            draw_blob_text(make_type('m','a','k','r'), *game_blob_b, &banner_white, desc->description, 0x40);
         }
     }
 
@@ -699,13 +691,13 @@ __attribute_used__ void original_gameselect_menu(u8 broken_alpha_0, u8 alpha_1, 
 
     // start string
     switch_lang_orig();
-    draw_blob_fixed(game_blob_text, game_blob_a, game_blob_b, &white);
+    draw_blob_fixed(game_blob_text, *game_blob_a, *game_blob_b, &white);
 
     // Messages relating to reading a disc
     if (selected_device == device_disc_drive) {
-        draw_blob_fixed(game_blob_insert_disc, game_blob_a, game_blob_b, &white);
-        draw_blob_fixed(game_blob_reading_disc, game_blob_a, game_blob_b, &white);
-        draw_blob_fixed(game_blob_could_not_read_disc, game_blob_a, game_blob_b, &white);
+        draw_blob_fixed(game_blob_insert_disc, *game_blob_a, *game_blob_b, &white);
+        draw_blob_fixed(game_blob_reading_disc, *game_blob_a, *game_blob_b, &white);
+        draw_blob_fixed(game_blob_could_not_read_disc, *game_blob_a, *game_blob_b, &white);
     }
     return;
 }
