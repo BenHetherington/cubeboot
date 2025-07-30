@@ -52,15 +52,15 @@ __attribute_reloc__ void (*draw_start_anim)(u8 alpha);
 __attribute_reloc__ void *banner_element_alpha;
 
 // unknown blob (from memcard menu)
-__attribute_reloc__ void **menu_blob;
+__attribute_reloc__ blob_header_t **menu_blob;
 
 // unknown blobs (from gameselect menu)
-__attribute_reloc__ void *game_blob_text;
-__attribute_reloc__ void *game_blob_insert_disc;
-__attribute_reloc__ void *game_blob_reading_disc;
-__attribute_reloc__ void *game_blob_could_not_read_disc;
-__attribute_reloc__ void **game_blob_a;
-__attribute_reloc__ void **game_blob_b;
+__attribute_reloc__ element_alpha_state_t *game_press_start_text_alpha;
+__attribute_reloc__ element_alpha_state_t *game_insert_disc_alpha;
+__attribute_reloc__ element_alpha_state_t *game_reading_disc_alpha;
+__attribute_reloc__ element_alpha_state_t *game_could_not_read_disc_alpha;
+__attribute_reloc__ blob_header_t **game_blob_a;
+__attribute_reloc__ blob_header_t **game_blob_b;
 
 // helpers
 __attribute_reloc__ void (*apply_save_rot)(s32 x, s32 y, s32 z, Mtx matrix);
@@ -691,13 +691,13 @@ __attribute_used__ void original_gameselect_menu(u8 broken_alpha_0, u8 alpha_1, 
 
     // start string
     switch_lang_orig();
-    draw_blob_fixed(game_blob_text, *game_blob_a, *game_blob_b, &white);
+    draw_blob_fixed(game_press_start_text_alpha, *game_blob_a, *game_blob_b, &white);
 
     // Messages relating to reading a disc
     if (selected_device == device_disc_drive) {
-        draw_blob_fixed(game_blob_insert_disc, *game_blob_a, *game_blob_b, &white);
-        draw_blob_fixed(game_blob_reading_disc, *game_blob_a, *game_blob_b, &white);
-        draw_blob_fixed(game_blob_could_not_read_disc, *game_blob_a, *game_blob_b, &white);
+        draw_blob_fixed(game_insert_disc_alpha, *game_blob_a, *game_blob_b, &white);
+        draw_blob_fixed(game_reading_disc_alpha, *game_blob_a, *game_blob_b, &white);
+        draw_blob_fixed(game_could_not_read_disc_alpha, *game_blob_a, *game_blob_b, &white);
     }
     return;
 }

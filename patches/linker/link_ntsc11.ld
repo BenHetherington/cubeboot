@@ -60,10 +60,10 @@ ntsc11_draw_named_tex = 0x8130a36c;
 ntsc11_menu_blob = 0x814815e4;
 ntsc11_game_blob_a = 0x814816d4;
 ntsc11_game_blob_b = 0x814816d0;
-ntsc11_game_blob_text = 0x814b25c8;
-ntsc11_game_blob_insert_disc = 0x814b25d8;
-ntsc11_game_blob_reading_disc = 0x814b25f8;
-ntsc11_game_blob_could_not_read_disc = 0x814b2608;
+ntsc11_game_press_start_text_alpha = 0x814b25c8;
+ntsc11_game_insert_disc_alpha = 0x814b25d8;
+ntsc11_game_reading_disc_alpha = 0x814b25f8;
+ntsc11_game_could_not_read_disc_alpha = 0x814b2608;
 
 ntsc11_get_camera_mtx = 0x81302f94;
 ntsc11_set_obj_pos = 0x8130537c;

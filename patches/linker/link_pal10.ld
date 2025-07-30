@@ -66,10 +66,10 @@ pal10_uart_init = 0x814adb10;
 pal10_menu_blob = 0x814ad484;
 pal10_game_blob_b = 0x814ad570;
 pal10_banner_pointer = 0x814ad2f0;
-pal10_game_blob_text = 0x814de4c8;
-pal10_game_blob_insert_disc = 0x814de4d8;
-pal10_game_blob_reading_disc = 0x814de4f8;
-pal10_game_blob_could_not_read_disc = 0x814de508;
+pal10_game_press_start_text_alpha = 0x814de4c8;
+pal10_game_insert_disc_alpha = 0x814de4d8;
+pal10_game_reading_disc_alpha = 0x814de4f8;
+pal10_game_could_not_read_disc_alpha = 0x814de508;
 pal10_next_menu_id = 0x814ad3f8;
 pal10_save_empty = 0x814ca968;
 

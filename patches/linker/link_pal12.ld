@@ -59,10 +59,10 @@ pal12_fast_cos = 0x81307e54;
 
 pal12_banner_ready = 0x814af588;
 pal12_banner_pointer = 0x814af5e8;
-pal12_game_blob_text = 0x814dfc88;
-pal12_game_blob_insert_disc = 0x814dfc98;
-pal12_game_blob_reading_disc = 0x814dfcb8;
-pal12_game_blob_could_not_read_disc = 0x814dfcc8;
+pal12_game_press_start_text_alpha = 0x814dfc88;
+pal12_game_insert_disc_alpha = 0x814dfc98;
+pal12_game_reading_disc_alpha = 0x814dfcb8;
+pal12_game_could_not_read_disc_alpha = 0x814dfcc8;
 pal12_menu_blob = 0x814af77c;
 pal12_game_blob_a = 0x814af86c;
 pal12_game_blob_b = 0x814af868;
