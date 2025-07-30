@@ -14,15 +14,24 @@ __attribute_data__ void *font_ptr_jpn_a = NULL;
 __attribute_data__ void *font_ptr_jpn_b = NULL;
 
 __attribute_data__ u16 orig_menu_lang;
+__attribute_data__ bool is_lang_overridden = false;
 
 #if 1
 void switch_lang_eng() {
+    if (!is_lang_overridden) {
+        is_lang_overridden = true;
+        orig_menu_lang = *current_lang;
+    }
     *font_ptr_ptr_a = font_ptr_eng_a;
     *font_ptr_ptr_b = font_ptr_eng_b;
     *current_lang = LANG_ENG;
 }
 
 void switch_lang_jpn() {
+    if (!is_lang_overridden) {
+        is_lang_overridden = true;
+        orig_menu_lang = *current_lang;
+    }
     *font_ptr_ptr_a = font_ptr_jpn_a;
     *font_ptr_ptr_b = font_ptr_jpn_b;
     *current_lang = LANG_JPN;
@@ -38,6 +47,7 @@ void switch_lang_orig() {
     }
 
     *current_lang = orig_menu_lang;
+    is_lang_overridden = false;
 }
 #else
 void switch_lang_eng() {}
