@@ -4,14 +4,13 @@
 
 #include "attr.h"
 #include "ipl.h"
+#include "memcard_menu.h"
 #include "reloc.h"
 #include "picolibc.h"
 
 #include "memcard.h"
-#include "font.h"
 
 // from https://github.com/Prakxo/ac-decomp/blob/b9554ef0cc3d8474047148882e898191f6e7bbb2/include/dolphin/private/card.h#L76
-#define CARD_MAX_FILE 127
 #define CARD_FILENAME_MAX 32
 typedef struct CARDDir {
     // total size: 0x40
@@ -76,10 +75,6 @@ __attribute_reloc__ s32 (*__CARDGetControlBlock)(s32 chan, card_block **card);
 __attribute_reloc__ s32 (*__CARDPutControlBlock)(card_block *card, s32 ret);
 __attribute_reloc__ s32 (*read_save_chunk)(card_file *file, u8 *read_buffer, u32 chunk_size, u32 chunk_offset);
 
-__attribute_reloc__ char* (*get_card_info)(s32 chan, s32 fileNo);
-__attribute_reloc__ void (*draw_card_info)(char unk);
-
-__attribute_data__ gameid_t card_game_ids[2][CARD_MAX_FILE];
 __attribute_used__ s32 save_card_status(s32 chan, s32 fileNo, CARDDir* dirent) {
     s32 ret = __CARDGetStatusEx(chan, fileNo, dirent);
     if (ret == 0) {
@@ -88,18 +83,6 @@ __attribute_used__ s32 save_card_status(s32 chan, s32 fileNo, CARDDir* dirent) {
     }
 
     return ret;
-}
-
-__attribute_used__ char *patched_card_info(s32 chan, s32 fileNo) {
-    if (card_game_ids[chan][fileNo].parts.gamecode[3] == 'J') switch_lang_jpn();
-    else switch_lang_eng();
-
-    return get_card_info(chan, fileNo);
-}
-
-__attribute_used__ void fix_card_info(char unk) {
-    draw_card_info(unk);
-    switch_lang_orig();
 }
 
 typedef enum {

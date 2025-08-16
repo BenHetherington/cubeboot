@@ -1,5 +1,7 @@
 #include <gctypes.h>
 
+#define CARD_MAX_FILE 127
+
 // // taken from gcmm
 // #define CARD_MAXICONS 8
 // #define CARD_GetIconSpeed(icon_speed,n)	(((icon_speed)>>(2*(n))) & 0x03)
@@ -29,14 +31,6 @@
 // } __attribute__((packed));
 
 // typedef struct card_direntry card_direntry_t;
-
-typedef union {
-    struct {
-        u8 gamecode[4];
-        u8 company[2];
-    } parts;
-    u8 blob[6];
-} gameid_t;
 
 // typedef struct {
 //     gameid_t id;
