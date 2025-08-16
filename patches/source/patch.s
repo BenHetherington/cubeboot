@@ -149,3 +149,8 @@ patch_inst_ntsc "_patch_bypass_ui_movable_check" 0x81315518 0x813158c8 0x81315c6
 patch_inst_pal "_patch_bypass_ui_movable_check" 0x81316274 0x813157f4 0x813163b4 li r0, 1
 patch_inst_ntsc "_patch_bypass_ui_movable_check_for_error_message" 0x81315620 0x813159d0 0x81315d68 0x81315d80 li r0, 1
 patch_inst_pal "_patch_bypass_ui_movable_check_for_error_message" 0x8131637c 0x813158fc 0x813164bc li r0, 1
+
+patch_inst_ntsc "_patch_draw_move_copy_erase_card_a" 0x8131ae40 0x8131b56c 0x8131b904 0x8131b91c bl patch_draw_move_copy_erase
+patch_inst_pal "_patch_draw_move_copy_erase_card_a" 0x8131bf18 0x8131b498 0x8131c058 bl patch_draw_move_copy_erase
+patch_inst_ntsc "_patch_draw_move_copy_erase_card_b" 0x8131ae58 0x8131b584 0x8131b91c 0x8131b934 bl patch_draw_move_copy_erase
+patch_inst_pal "_patch_draw_move_copy_erase_card_b" 0x8131bf30 0x8131b4b0 0x8131c070 bl patch_draw_move_copy_erase

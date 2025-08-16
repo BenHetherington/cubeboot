@@ -122,3 +122,8 @@ pal10_cube_menu_alpha = 0x814b5eb8;
 pal10_draw_buttons = 0x8131508c;
 pal10_setup_buttons_matrix = 0x813030b0;
 pal10_update_button_alphas = 0x81312580;
+
+pal10_draw_move_copy_erase = 0x8131b018;
+pal10_card_menu_state = 0x814ad450;
+pal10_card_menu_grid_to_entry_indices = 0x814b6674;
+pal10_card_menu_entries = 0x814b72a8;

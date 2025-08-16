@@ -125,3 +125,8 @@ ntsc11_cube_menu_alpha = 0x81489fb8;
 ntsc11_draw_buttons = 0x81314604;
 ntsc11_setup_buttons_matrix = 0x813030b0;
 ntsc11_update_button_alphas = 0x81311ce8;
+
+ntsc11_draw_move_copy_erase = 0x8131a66c;
+ntsc11_card_menu_state = 0x814815b0;
+ntsc11_card_menu_grid_to_entry_indices = 0x8148a774;
+ntsc11_card_menu_entries = 0x8148b3a8;
