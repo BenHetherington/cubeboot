@@ -151,6 +151,23 @@ void load_settings() {
         }
     }
 
+    // ntsc_language
+    settings.ntsc_language = NTSC_LANGUAGE_AUTO;
+    const char *ntsc_language_str = ini_get(conf, "cubeboot", "ntsc_language");
+    if (ntsc_language_str != NULL) {
+        iprintf("Found ntsc_language = %s\n", ntsc_language_str);
+
+        if (strcmp(ntsc_language_str, "en") == 0 || strcmp(ntsc_language_str, "eng") == 0 || strcmp(ntsc_language_str, "english") == 0) {
+            settings.ntsc_language = NTSC_LANGUAGE_ENGLISH;
+        } else if (strcmp(ntsc_language_str, "ja") || strcmp(ntsc_language_str, "jpn") || strcmp(ntsc_language_str, "japanese")) {
+            settings.ntsc_language = NTSC_LANGUAGE_JAPANESE;
+        } else if (strcmp(ntsc_language_str, "auto")) {
+            settings.ntsc_language = NTSC_LANGUAGE_AUTO;
+        } else {
+            iprintf("Unrecognised language\n");
+        }
+    }
+
     // // must stay allocated!!
     // free(config_buf);
 }

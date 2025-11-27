@@ -17,8 +17,7 @@
 patch_inst_ntsc "_reduce_aram_alloc" 0x81301204 0x81301040 0x813013f4 0x813013f8 lis r5, 0x10 // Reduce ARAM to 1MB for JAudio (also used in Pikmin)
 patch_inst_pal "_reduce_aram_alloc" 0x81301040 0x81301040 0x81301040 lis r5, 0x10 // Reduce ARAM to 1MB for JAudio (also used in Pikmin)
 
-// patch_inst_ntsc "_force_lang" 0x8130b5b8 0x8130b740 0x8130bab4 0x8130bacc bl set_forced_lang
-patch_inst_ntsc "_force_lang" 0x8130b5b4 0x8130b73c 0x8130bab0 0x8130bac8 li r0, 0 // Force English=0, Japanese=2 (NTSC Only)
+patch_inst_ntsc "_force_lang" 0x8130b5b8 0x8130b740 0x8130bab4 0x8130bacc bl set_ntsc_lang
 patch_inst_pal "_fix_font_japanese" 0x81309600 0x00000000 0x81309740 b GetFontCode
 patch_inst vNTSC_10(_fix_font_decode_buf) 0x813083d0 lis r3, -0x7e90 // Move buffer to himem (0x81700000) TODO: wrap this with an alloc
 patch_inst vNTSC_10(_fix_banner_bnr2) 0x81302778 nop

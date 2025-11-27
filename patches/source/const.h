@@ -1,1 +1,1 @@
-#define MAX_BUTTONS 13
+../../cubeboot/source/const.h

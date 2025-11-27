@@ -13,6 +13,7 @@ typedef struct settings {
     u32 postboot_delay_ms;
     char *default_program;
     char *boot_buttons[MAX_BUTTONS];
+    settings_ntsc_language ntsc_language;
 } settings_t;
 
 extern char *buttons_names[];

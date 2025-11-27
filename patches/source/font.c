@@ -1,6 +1,7 @@
 #include "reloc.h"
 #include "attr.h"
 #include "font.h"
+#include "const.h"
 
 __attribute_reloc__ u16 *current_lang;
 __attribute_reloc__ void **font_ptr_ptr_a;
@@ -14,6 +15,7 @@ __attribute_data__ void *font_ptr_jpn_a = NULL;
 __attribute_data__ void *font_ptr_jpn_b = NULL;
 
 __attribute_data__ u16 orig_menu_lang;
+__attribute_data__ u32 ntsc_language = NTSC_LANGUAGE_AUTO;
 
 #if 1
 void switch_lang_eng() {
@@ -52,7 +54,7 @@ void setup_fonts(u32 unk) {
     font_init(0);
     font_ptr_eng_a = *font_ptr_ptr_a;
     font_ptr_eng_b = *font_ptr_ptr_b;
-    
+
 #ifdef PRINT_FONT_PTRS
     OSReport("font_ptr_eng_a = %p\n", font_ptr_eng_a);
     OSReport("font_ptr_eng_b = %p\n", font_ptr_eng_b);
@@ -75,13 +77,29 @@ void setup_fonts(u32 unk) {
 }
 
 // default behavior
-void set_forced_lang() {
-    static vu16* const _viReg = (u16*)0xCC002000; // from libogc2
+static u32 get_default_ntsc_lang() {
+    vu16* const _viReg = (u16*)0xCC002000; // from libogc2
     if (_viReg[55] & 0x0002) {
-        *current_lang = LANG_JPN;
+        return LANG_JPN;
     } else {
-        *current_lang = LANG_ENG;
+        return LANG_ENG;
     }
+}
+
+static u32 get_desired_ntsc_lang() {
+    switch (ntsc_language) {
+        case NTSC_LANGUAGE_AUTO:
+        default:
+            return get_default_ntsc_lang();
+        case NTSC_LANGUAGE_ENGLISH:
+            return LANG_ENG;
+        case NTSC_LANGUAGE_JAPANESE:
+            return LANG_JPN;
+    }
+}
+
+void set_ntsc_lang() {
+    *current_lang = get_desired_ntsc_lang();
 }
 
 // from https://github.com/zeldaret/tp/blob/fcf137a90218064c0d4218abadf934538ed43671/libs/dolphin/os/OSFont.c#L7-L241
